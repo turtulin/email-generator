@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    .section {
+        background-color: #f1f5f8; /* colore per le sezioni normali */
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    .young-section {
+        background-color: #ffe5b4; /* colore arancione chiaro per le sezioni giovani */
+    }
+
+    body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header img {
+            width: 100px;
+            height: auto;
+        }
+        h2 {
+            color: #ed1c24;
+            font-size: 20px;
+        }
+
+        .section {
+            background-color: #f1f5f8; /* Default light blue for regular sections */
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .young-section {
+            background-color: #ffe5b4; /* Light orange background for young sections */
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .btn {
+                background-color: #1b3b5d;
+                color: white;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                border-radius: 5px;
+                margin-top: 10px;
+        }
+
+        .info {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 10px;
+            color: #007abf;
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: #007abf;
+            text-decoration: none;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
+    <title></title>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header with logo -->
+    <div class="header">
+        <img src="https://www.unicam.it/themes/custom/italiagov/unicam/webp/logo.webp" alt="Logo UNICAM" style="width: 100px;">
+        <h1 style="color: #1b3b5d;">Università di Camerino</h1>
+    </div>
+
+    <!-- Introduction -->
+    <p>[[INTRODUCTION]]</p>
+
+    <!-- Dynamic Sections -->
+    [[SECTIONS]]
+
+    <!-- Conclusion -->
+    <p>[[CONCLUSION]]</p>
+
+    <!-- Contact Information -->
+    <div class="section info">
+        [[CONTACT_INFO]]
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        [[FOOTER]]
+    </div>
+
+</div>
+
+</body>
+</html>

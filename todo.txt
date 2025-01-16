@@ -1,0 +1,13 @@
+ASPETTO
+- centrare scritte e bottoni
+- allontanare leggermente i bottoni
+- cambiare arancione giovani
+
+HOSTING
+- hostare il sito
+
+SEZIONI
+- aggiungere sezione giovani
+
+DOCUMENTAZIONE
+- scrivere breve documentazione
