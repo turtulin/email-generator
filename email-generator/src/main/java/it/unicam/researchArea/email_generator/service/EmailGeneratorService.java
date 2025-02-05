@@ -1,5 +1,6 @@
 package it.unicam.researchArea.email_generator.service;
 
+import it.unicam.researchArea.email_generator.configuration.AppConfig;
 import it.unicam.researchArea.email_generator.model.Section;
 import org.springframework.stereotype.Service;
 
@@ -11,54 +12,58 @@ import java.util.List;
 @Service
 public class EmailGeneratorService {
     private final List<Section> sections = new ArrayList<>();
-    private final String introPath = "src/main/resources/static/introduction.txt";
-    private final String conclusionPath = "src/main/resources/static/conclusion.txt";
-    private final String contactInfoPath = "src/main/resources/static/contactInfo.txt";
-    private final String footerPath = "src/main/resources/static/footer.txt";
 
     public String getIntroduction() {
-        return readFile(introPath);  // Return plain text
+        return readFile(AppConfig.INTRODUCTION_PATH);
     }
 
     public String getIntroductionForHtml() {
-        String intro = readFile(introPath);
-        return intro.replace("\n", "<br />");
+        return getIntroduction().replace("\n", "<br />");
     }
 
-    public String updateIntroduction(String content) { return writeFile(introPath, content); }
+    public String updateIntroduction(String content) {
+        return writeFile(AppConfig.INTRODUCTION_PATH, content);
+    }
 
     public String getConclusion() {
-        return readFile(conclusionPath);  // Return plain text
+        return readFile(AppConfig.CONCLUSION_PATH);
     }
 
     public String getConclusionForHtml() {
-        String conclusion = readFile(conclusionPath);
-        return conclusion.replace("\n", "<br />");
+        return getConclusion().replace("\n", "<br />");
     }
 
-    public String updateConclusion(String content) { return writeFile(conclusionPath, content); }
+    public String updateConclusion(String content) {
+        return writeFile(AppConfig.CONCLUSION_PATH, content);
+    }
 
     public String getFooter() {
-        return readFile(footerPath);  // Return plain text
+        return readFile(AppConfig.FOOTER_PATH);
     }
 
     public String getFooterForHtml() {
-        String footer = readFile(footerPath);
-        return footer.replace("\n", "<br />");
+        return getFooter().replace("\n", "<br />");
     }
-    public String updateFooter(String footer) { return writeFile(footerPath, footer); }
+
+    public String updateFooter(String content) {
+        return writeFile(AppConfig.FOOTER_PATH, content);
+    }
 
     public String getContacts() {
-        return readFile(contactInfoPath);
+        return readFile(AppConfig.CONTACT_INFO_PATH);
     }
 
     public String getContactsForHtml() {
-        String contacts = readFile(contactInfoPath);
-        return contacts.replace("\n", "<br />");
+        return getContacts().replace("\n", "<br />");
     }
-    public String updateContacts(String contacts) { return writeFile(contactInfoPath, contacts); }
 
-    public List<Section> getSections() { return sections; }
+    public String updateContacts(String content) {
+        return writeFile(AppConfig.CONTACT_INFO_PATH, content);
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
 
     public String addSection(Section section) {
         sections.add(section);
@@ -66,12 +71,19 @@ public class EmailGeneratorService {
     }
 
     private String readFile(String path) {
-        try { return Files.readString(Paths.get(path)); }
-        catch (Exception e) { e.printStackTrace(); return ""; }
+        try {
+            return Files.readString(Paths.get(path));
+        } catch (Exception e) {
+            throw new RuntimeException("Error reading file: " + path, e);
+        }
     }
 
     private String writeFile(String path, String content) {
-        try { Files.writeString(Paths.get(path), content); return "File updated"; }
-        catch (Exception e) { e.printStackTrace(); return "Error updating file"; }
+        try {
+            Files.writeString(Paths.get(path), content);
+            return "File updated";
+        } catch (Exception e) {
+            throw new RuntimeException("Error writing to file: " + path, e);
+        }
     }
 }
