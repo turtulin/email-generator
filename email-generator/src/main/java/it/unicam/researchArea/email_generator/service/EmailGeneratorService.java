@@ -8,10 +8,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class EmailGeneratorService {
-    private final List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new CopyOnWriteArrayList<>(); // Thread-safe list
 
     public String getIntroduction() {
         return readFile(AppConfig.INTRODUCTION_PATH);
@@ -62,6 +63,10 @@ public class EmailGeneratorService {
     }
 
     public List<Section> getSections() {
+        return new ArrayList<>(sections); // Return a copy of the list
+    }
+
+    public List<Section> accessSections() {
         return sections;
     }
 

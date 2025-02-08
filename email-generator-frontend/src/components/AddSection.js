@@ -3,49 +3,46 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const AddSection = () => {
-  const [section, setSection] = useState('Bandi'); // Default section
+  const [section, setSection] = useState('Bandi');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
-  const [deadlineError, setDeadlineError] = useState(''); // For validation errors
+  const [deadlineError, setDeadlineError] = useState('');
   const [link, setLink] = useState('');
   const [directApplicationLink, setDirectApplicationLink] = useState('');
-  const [type, setType] = useState('Nazionale'); // Optional: Keep if needed
+  const [type, setType] = useState('Nazionale');
   const [isYoung, setIsYoung] = useState(false);
   const [isUrgent, setIsUrgent] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
-  const [notification, setNotification] = useState({ message: '', type: '' }); // For success/error messages
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState({ message: '', type: '' });
   const navigate = useNavigate();
 
-  // Validate the date format (dd-mm-yyyy)
   const validateDate = (dateString) => {
-    const regex = /^\d{2}-\d{2}-\d{4}$/; // Matches dd-mm-yyyy
+    const regex = /^\d{2}-\d{2}-\d{4}$/;
     if (!regex.test(dateString)) {
       return false;
     }
 
-    // Check if the date is valid
     const [day, month, year] = dateString.split('-');
     const date = new Date(`${year}-${month}-${day}`);
     return date.getFullYear() == year && date.getMonth() + 1 == month && date.getDate() == day;
   };
 
   const handleSave = () => {
-    // Validate the deadline before saving
     if (deadline && !validateDate(deadline)) {
       setDeadlineError('Inserisci una data valida nel formato dd-mm-yyyy');
       return;
     }
 
     setIsLoading(true);
-    setNotification({ message: '', type: '' }); // Clear previous notifications
+    setNotification({ message: '', type: '' });
 
     const sectionData = { section, title, description, link, directApplicationLink, type, isYoung, isUrgent, deadline };
     
     axios.post('/api/email/sections', sectionData)
       .then(() => {
         setNotification({ message: 'Sezione aggiunta con successo!', type: 'success' });
-        setTimeout(() => navigate('/'), 1000); // Redirect after 1 second
+        setTimeout(() => navigate('/'), 1000);
       })
       .catch((error) => {
         console.error('Errore durante il salvataggio della sezione', error);
@@ -107,7 +104,6 @@ const AddSection = () => {
         value={deadline} 
         onChange={(e) => {
           const value = e.target.value;
-          // Allow only digits and hyphens, and enforce the dd-mm-yyyy format
           if (/^\d{0,2}-?\d{0,2}-?\d{0,4}$/.test(value)) {
             setDeadline(value);
             setDeadlineError('');
@@ -220,7 +216,7 @@ const styles = {
     marginBottom: '15px',
   },
   textarea: {
-    resize: 'vertical', // Allow vertical resizing
+    resize: 'vertical',
     minHeight: '100px',
   },
   checkbox: {

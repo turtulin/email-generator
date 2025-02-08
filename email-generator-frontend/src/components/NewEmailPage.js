@@ -4,12 +4,11 @@ import { Link } from 'react-router-dom';
 
 const NewEmailPage = () => {
   const [emailHtml, setEmailHtml] = useState('');
-  const [notification, setNotification] = useState({ message: '', type: '' }); // For success/error messages
+  const [notification, setNotification] = useState({ message: '', type: '' });
 
   useEffect(() => {
-    let isMounted = true; // Track if the component is still mounted
+    let isMounted = true;
 
-    // Fetch the HTML template from the backend whenever the component loads
     axios.get('/api/email/generate-email')
       .then(response => {
         if (isMounted) {
@@ -24,9 +23,9 @@ const NewEmailPage = () => {
       });
 
     return () => {
-      isMounted = false; // Cleanup to avoid setting state on an unmounted component
+      isMounted = false;
     };
-  }, []); // Only on initial load or on reload
+  }, []);
 
   const handleCopy = async () => {
     try {
@@ -39,22 +38,19 @@ const NewEmailPage = () => {
         ]);
         setNotification({ message: 'Template della mail copiato negli appunti come contenuto formattato!', type: 'success' });
       } else {
-        // Create a content-editable div for copying rich content
         const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'fixed'; // Prevent scrolling to bottom of page
-        tempDiv.style.opacity = '0'; // Hide the div
-        tempDiv.setAttribute('contenteditable', 'true'); // Make it content-editable
-        tempDiv.innerHTML = emailHtml; // Set HTML content
+        tempDiv.style.position = 'fixed';
+        tempDiv.style.opacity = '0';
+        tempDiv.setAttribute('contenteditable', 'true');
+        tempDiv.innerHTML = emailHtml;
         document.body.appendChild(tempDiv);
         tempDiv.focus();
         
-        // Select all content in the div
         document.execCommand('selectAll', false, null);
         document.execCommand('copy');
         
         setNotification({ message: 'Template della mail copiato negli appunti usando un metodo alternativo.', type: 'info' });
 
-        // Clean up by removing the temp div
         document.body.removeChild(tempDiv);
       }
     } catch (error) {
@@ -64,11 +60,10 @@ const NewEmailPage = () => {
   };
 
   const handleNewEmail = () => {
-    // Call the backend to clear all sections
     axios.post('/api/email/clear-sections')
       .then(() => {
         setNotification({ message: 'Tutte le sezioni sono state rimosse. La mail è stata resettata.', type: 'success' });
-        setTimeout(() => window.location.reload(), 1000); // Reload after 1 second
+        setTimeout(() => window.location.reload(), 1000); 
       })
       .catch(error => {
         console.error("Errore durante la rimozione delle sezioni", error);

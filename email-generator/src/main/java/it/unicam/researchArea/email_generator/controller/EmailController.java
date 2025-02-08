@@ -4,7 +4,6 @@ import it.unicam.researchArea.email_generator.model.Section;
 import it.unicam.researchArea.email_generator.service.EmailGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,12 +70,12 @@ public class EmailController {
 
     @PostMapping("/clear-sections")
     public ResponseEntity<String> clearSections() {
-        emailGeneratorService.getSections().clear();
+        emailGeneratorService.accessSections().clear();
         return ResponseEntity.ok("All sections have been cleared");
     }
 
     @GetMapping("/generate-email")
-    public ResponseEntity<String> generateEmailTemplate() {
+    public String generateEmailTemplate() {
         try {
             String htmlTemplate = loadTemplate();
             String introduction = emailGeneratorService.getIntroductionForHtml();
@@ -85,43 +84,67 @@ public class EmailController {
             String contactInfo = emailGeneratorService.getContactsForHtml();
             String footer = emailGeneratorService.getFooterForHtml();
 
-            String emailHtml = htmlTemplate
+            return htmlTemplate
                     .replace("[[INTRODUCTION]]", introduction != null ? introduction : "")
                     .replace("[[SECTIONS]]", sectionsHtml)
                     .replace("[[CONCLUSION]]", conclusion != null ? conclusion : "")
                     .replace("[[CONTACT_INFO]]", contactInfo != null ? contactInfo : "")
                     .replace("[[FOOTER]]", footer != null ? footer : "");
 
-            return ResponseEntity.ok(emailHtml);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error loading template");
+            e.printStackTrace();
+            return "Error loading template";
         }
-    }
-
-    private String loadTemplate() throws IOException {
-        ClassPathResource resource = new ClassPathResource("templates/emailTemplate.html");
-        return Files.readString(resource.getFile().toPath());
     }
 
     private String generateSectionsHtml() {
         List<Section> sections = emailGeneratorService.getSections();
         sections.sort((s1, s2) -> Boolean.compare(s2.isUrgent(), s1.isUrgent()));
 
-        StringBuilder html = new StringBuilder();
+        StringBuilder finalHtml = new StringBuilder();
+
+        appendSection(finalHtml, "BANDI", sections, "Bandi");
+        appendSection(finalHtml, "NEWS", sections, "News");
+        appendSection(finalHtml, "INIZIATIVE FORMATIVE", sections, "Iniziative Formative");
+
+        return finalHtml.toString();
+    }
+
+    private void appendSection(StringBuilder htmlBuilder, String sectionTitle, List<Section> sections, String sectionName) {
+        StringBuilder regularHtml = new StringBuilder();
+        StringBuilder youngHtml = new StringBuilder();
+
         for (Section section : sections) {
-            html.append(getFormattedSection(section));
+            if (section.section().equals(sectionName)) {
+                String formattedSection = getFormattedSection(section);
+                if (section.isYoung()) {
+                    youngHtml.append(formattedSection);
+                } else {
+                    regularHtml.append(formattedSection);
+                }
+            }
         }
-        return html.toString();
+
+        if (!regularHtml.isEmpty() || !youngHtml.isEmpty()) {
+            htmlBuilder.append("<h2>").append(sectionTitle).append("</h2>").append(regularHtml);
+            if (!youngHtml.isEmpty()) {
+                htmlBuilder.append("<hr /><h3>🌱 Early Career Researchers</h3>").append(youngHtml);
+            }
+        }
     }
 
     private static String getFormattedSection(Section section) {
-        String sectionHtml = "<div class='section {CLASS}'><h2>{EMOJI} {TITLE}</h2>{DEADLINE}{DESCRIPTION}{LINK}{DIRECT_APPLICATION_LINK}</div>";
-        String sectionClass = section.isUrgent() ? "urgent" : "normal";
+        String sectionHtml = "<div class='section {TYPE}'><h2>{EMOJI} {TITLE}</h2>{DEADLINE}{DESCRIPTION}{LINK}{DIRECT_APPLICATION_LINK}</div>";
+        String typeClass = section.isUrgent() ? "urgent" : "normal";
         String deadline = section.deadline() != null && !section.deadline().isEmpty() ? "<p><strong>Scadenza:</strong> " + section.deadline() + "</p>" : "";
-        String description = section.description() != null && !section.description().isEmpty() ? "<p>Descrizione: " + section.description() + "</p>" : "";
-        String link = section.link() != null && !section.link().isEmpty() ? "<a href='" + section.link() + "' class='btn'>Vai al Bando</a>" : "";
+        String description = section.description() != null && !section.description().isEmpty() ? section.description() + "</p>" : "";
+        String link = section.link() != null && !section.link().isEmpty() ?
+                "<a href='" + section.link() + "' style='display: inline-block; background-color: #1a3b5c; color: white; padding: 8px 12px; text-decoration: none; border-radius: 5px; margin-right: 10px;'>Vai al bando</a>"
+                : "";
+
         String directApplicationLink = section.directApplicationLink() != null && !section.directApplicationLink().isEmpty() ?
-                "<br /><a href='" + section.directApplicationLink() + "' class='btn'>Candidati</a>" : "";
+                "<a href='" + section.directApplicationLink() + "' style='display: inline-block; background-color: #ed1c24; color: white; padding: 8px 12px; text-decoration: none; border-radius: 5px;'>Candidati</a>"
+                : "";
         return sectionHtml
                 .replace("{TITLE}", section.title())
                 .replace("{DEADLINE}", deadline)
@@ -129,6 +152,11 @@ public class EmailController {
                 .replace("{LINK}", link)
                 .replace("{DIRECT_APPLICATION_LINK}", directApplicationLink)
                 .replace("{EMOJI}", section.type().equals("Internazionale") ? "🇪🇺" : "🇮🇹")
-                .replace("{CLASS}", sectionClass);
+                .replace("{TYPE}", typeClass);
+    }
+
+    private String loadTemplate() throws IOException {
+        ClassPathResource resource = new ClassPathResource("templates/emailTemplate.html");
+        return Files.readString(resource.getFile().toPath());
     }
 }
