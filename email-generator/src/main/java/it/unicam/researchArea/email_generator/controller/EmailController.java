@@ -1,5 +1,6 @@
 package it.unicam.researchArea.email_generator.controller;
 
+import it.unicam.researchArea.email_generator.configuration.AppConfig;
 import it.unicam.researchArea.email_generator.model.Section;
 import it.unicam.researchArea.email_generator.service.EmailGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -20,7 +22,11 @@ public class EmailController {
 
     @GetMapping("/introduction")
     public ResponseEntity<String> getIntroduction() {
-        return ResponseEntity.ok(emailGeneratorService.getIntroduction());
+        try {
+            return ResponseEntity.ok(emailGeneratorService.getIntroduction());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/introduction")
@@ -30,7 +36,11 @@ public class EmailController {
 
     @GetMapping("/conclusion")
     public ResponseEntity<String> getConclusion() {
-        return ResponseEntity.ok(emailGeneratorService.getConclusion());
+        try {
+            return ResponseEntity.ok(emailGeneratorService.getConclusion());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/conclusion")
@@ -40,7 +50,11 @@ public class EmailController {
 
     @GetMapping("/footer")
     public ResponseEntity<String> getFooter() {
-        return ResponseEntity.ok(emailGeneratorService.getFooter());
+        try {
+            return ResponseEntity.ok(emailGeneratorService.getFooter());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/footer")
@@ -50,7 +64,11 @@ public class EmailController {
 
     @GetMapping("/contacts")
     public ResponseEntity<String> getContacts() {
-        return ResponseEntity.ok(emailGeneratorService.getContacts());
+        try {
+            return ResponseEntity.ok(emailGeneratorService.getContacts());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/contacts")
@@ -156,7 +174,9 @@ public class EmailController {
     }
 
     private String loadTemplate() throws IOException {
-        ClassPathResource resource = new ClassPathResource("templates/emailTemplate.html");
-        return Files.readString(resource.getFile().toPath());
+        ClassPathResource resource = AppConfig.TEMPLATE_PATH;
+        try (InputStream inputStream = resource.getInputStream()) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }
