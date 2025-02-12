@@ -1,13 +1,17 @@
 package it.unicam.researchArea.email_generator.configuration;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Configuration
 public class AppConfig {
-    public static final ClassPathResource TEMPLATE_PATH = new ClassPathResource("templates/emailTemplate.html");
-    public static final ClassPathResource INTRODUCTION_PATH = new ClassPathResource("static/introduction.txt");
-    public static final ClassPathResource CONCLUSION_PATH = new ClassPathResource("static/conclusion.txt");
-    public static final ClassPathResource CONTACT_INFO_PATH = new ClassPathResource("static/contactInfo.txt");
-    public static final ClassPathResource FOOTER_PATH = new ClassPathResource("static/footer.txt");
+    public static final String DATA_DIRECTORY = "/opt/app/data";
+
+    public static final Path INTRODUCTION_PATH = Paths.get(DATA_DIRECTORY, "introduction.txt");
+    public static final Path CONCLUSION_PATH = Paths.get(DATA_DIRECTORY, "conclusion.txt");
+    public static final Path FOOTER_PATH = Paths.get(DATA_DIRECTORY, "footer.txt");
+    public static final Path CONTACT_INFO_PATH = Paths.get(DATA_DIRECTORY, "contacts.txt");
+    public static final Path TEMPLATE_PATH = Paths.get(DATA_DIRECTORY, "template.html");
 }

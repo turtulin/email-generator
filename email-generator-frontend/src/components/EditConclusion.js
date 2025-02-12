@@ -5,11 +5,10 @@ import { useNavigate } from 'react-router-dom';
 const EditConclusion = () => {
   const [conclusion, setConclusion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [notification, setNotification] = useState({ message: '', type: '' }); // For success/error messages
+  const [notification, setNotification] = useState({ message: '', type: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the current conclusion from the backend
     axios.get('/api/email/conclusion')
       .then(response => {
         setConclusion(response.data);
@@ -22,15 +21,14 @@ const EditConclusion = () => {
 
   const handleSave = () => {
     setIsLoading(true);
-    setNotification({ message: '', type: '' }); // Clear previous notifications
+    setNotification({ message: '', type: '' });
 
-    // Save the updated conclusion to the backend
     axios.post('/api/email/conclusion', conclusion, {
       headers: { 'Content-Type': 'text/plain' }
     })
       .then(() => {
         setNotification({ message: 'Conclusione aggiornata con successo!', type: 'success' });
-        setTimeout(() => navigate('/'), 1000); // Redirect after 1 second
+        setTimeout(() => navigate('/'), 1000);
       })
       .catch(error => {
         console.error("Error updating the conclusion", error);
@@ -111,7 +109,7 @@ const styles = {
     border: '1px solid #ccc',
     borderRadius: '5px',
     marginBottom: '20px',
-    resize: 'vertical', // Allow vertical resizing
+    resize: 'vertical',
   },
   buttonGroup: {
     display: 'flex',

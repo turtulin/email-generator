@@ -1,16 +1,12 @@
 package it.unicam.researchArea.email_generator.controller;
 
-import it.unicam.researchArea.email_generator.configuration.AppConfig;
 import it.unicam.researchArea.email_generator.model.Section;
 import it.unicam.researchArea.email_generator.service.EmailGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -97,10 +93,10 @@ public class EmailController {
         try {
             String htmlTemplate = loadTemplate();
             String introduction = emailGeneratorService.getIntroductionForHtml();
-            String sectionsHtml = generateSectionsHtml();
             String conclusion = emailGeneratorService.getConclusionForHtml();
             String contactInfo = emailGeneratorService.getContactsForHtml();
             String footer = emailGeneratorService.getFooterForHtml();
+            String sectionsHtml = generateSectionsHtml();
 
             return htmlTemplate
                     .replace("[[INTRODUCTION]]", introduction != null ? introduction : "")
@@ -174,9 +170,6 @@ public class EmailController {
     }
 
     private String loadTemplate() throws IOException {
-        ClassPathResource resource = AppConfig.TEMPLATE_PATH;
-        try (InputStream inputStream = resource.getInputStream()) {
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        }
+        return emailGeneratorService.getTemplate();
     }
 }

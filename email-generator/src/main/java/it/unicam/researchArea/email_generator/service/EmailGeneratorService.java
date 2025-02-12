@@ -2,13 +2,11 @@ package it.unicam.researchArea.email_generator.service;
 
 import it.unicam.researchArea.email_generator.configuration.AppConfig;
 import it.unicam.researchArea.email_generator.model.Section;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +17,7 @@ public class EmailGeneratorService {
     private final List<Section> sections = new CopyOnWriteArrayList<>(); // Thread-safe list
 
     public String getIntroduction() throws IOException {
-        InputStream introductionStream = readFile(AppConfig.INTRODUCTION_PATH);
-        return getString(introductionStream);
+        return Files.readString(Paths.get(AppConfig.INTRODUCTION_PATH.toUri()));
     }
 
     public String getIntroductionForHtml() throws IOException {
@@ -32,8 +29,7 @@ public class EmailGeneratorService {
     }
 
     public String getConclusion() throws IOException {
-        InputStream conclusionStream = readFile(AppConfig.CONCLUSION_PATH);
-        return getString(conclusionStream);
+        return Files.readString(Paths.get(AppConfig.CONCLUSION_PATH.toUri()));
     }
 
     public String getConclusionForHtml() throws IOException {
@@ -45,8 +41,7 @@ public class EmailGeneratorService {
     }
 
     public String getFooter() throws IOException {
-        InputStream footerStream = readFile(AppConfig.FOOTER_PATH);
-        return getString(footerStream);
+        return Files.readString(Paths.get(AppConfig.FOOTER_PATH.toUri()));
     }
 
     public String getFooterForHtml() throws IOException {
@@ -58,8 +53,7 @@ public class EmailGeneratorService {
     }
 
     public String getContacts() throws IOException {
-        InputStream contactsStream = readFile(AppConfig.CONTACT_INFO_PATH);
-        return getString(contactsStream);
+        return Files.readString(Paths.get(AppConfig.CONTACT_INFO_PATH.toUri()));
     }
 
     public String getContactsForHtml() throws IOException {
@@ -68,6 +62,10 @@ public class EmailGeneratorService {
 
     public String updateContacts(String content) {
         return writeFile(AppConfig.CONTACT_INFO_PATH, content);
+    }
+
+    public String getTemplate() throws IOException {
+        return Files.readString(Paths.get(AppConfig.TEMPLATE_PATH.toUri()));
     }
 
     public List<Section> getSections() {
@@ -83,23 +81,11 @@ public class EmailGeneratorService {
         return "Section added";
     }
 
-    private InputStream readFile(ClassPathResource path) {
+    private String writeFile(Path path, String content) {
         try {
-            return path.getInputStream();
-        } catch (Exception e) {
-            throw new RuntimeException("Error reading file: " + path, e);
-        }
-    }
-
-    private String getString(InputStream input) throws IOException {
-        return new String(input.readAllBytes());
-    }
-
-    private String writeFile(ClassPathResource path, String content) {
-        try {
-            Files.writeString(Paths.get(path.getURI()), content);
+            Files.writeString(path, content);
             return "File updated";
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("Error writing file: " + path, e);
         }
     }
