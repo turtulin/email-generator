@@ -45,7 +45,5 @@ The tool does not store or transmit user input externally. All data is processed
 ## Future Improvements
 
 - Add multiple template types
-- Support dynamic variables (e.g. placeholders)
 - Export to additional formats (JSON, HTML email)
-- Add validation for required fields
 - Improve UI/UX for better usability
