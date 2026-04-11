@@ -13,7 +13,7 @@ This project is a tool designed to help employees quickly generate pre-formatted
 ## Technologies
 
 - JavaScript
-- HTML/CSS (if UI is present)
+- HTML/CSS
 
 ## Use Cases
 
